@@ -19,43 +19,66 @@ async.series([
   		} else {
    			 console.log("Connected to Database.");
   		}
-			callback();
 		});
-	},
-	function(callback) {
 		connection.query('Use XaiMarsh',function(err,rows,fields){
-		  if(err){
-    			console.log('Error looking up databases');
- 		 } else {
-    			console.log('Successfully using database');
-			}
-			callback();
-		});
+                  if(err){
+                        console.log('Error looking up databases: '+err);
+                 } else {
+                        console.log('Successfully using database');
+                        }
+                        callback();
+                });
+
 	},
+//	function(callback) {
+//		connection.query('Use XaiMarsh',function(err,rows,fields){
+//		  if(err){
+//    			console.log('Error looking up databases: '+err);
+// 		 } else {
+//    			console.log('Successfully using database');
+//			}
+//			callback();
+//		});
+//	},
 	function(callback) {
-		connection.query('SHOW Tables',function(err,rows,fields){
+		connection.query('SHOW TABLES',function(err,rows,fields){
 			if(err){
-    				console.log('Error looking up databases2');
+    				console.log('Error looking up databases2 '+err);
  			 } else {
-    				storedRows = rows;
+    				console.log('it actually went in here');
+				 storedRows = rows;
+				 console.log('it actually went past here');
+				 console.log(storedRows[0].Tables_in_XaiMarsh);
+				 console.log('it actually went farther');
           		}
-			callback();
+			 callback();
 		});
 	},
 	function(callback) {
+		var pimple = 0;
 		for (i = 0; i < storedRows.length; i++) {
-       			 connection.query(str1.concat(storedRows[i]),function(err,rows,fields) {
+			connection.query(str1.concat(storedRows[i].Tables_in_XaiMarsh),function(err,rows,fields) {
                 		if (err) {
                        			 console.log('Error describing rows'+err);
                			 } else {
-                       			 console.log(rows);
+					 console.log(storedRows[pimple]);
+					 console.log('......|XaiMarsh.'+storedRows[pimple].Tables_in_XaiMarsh + '>'); 
+					 pimple++;
+					 for (j = 0; j < rows.length; j++ ) {
+                       			 	console.log(rows[j].Field + " " + rows[j].Type);
+					 }
                 		}
 
        			 });
-			callback();
+		
 		}
+		 callback();
+	},
+	function(callback) {
+		connection.end();
+		callback();
 	}
 
 ]);
 
-connection.end()
+//connection.end()
