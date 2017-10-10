@@ -56,10 +56,12 @@ async.series([
     				console.log('Error looking up databases2 '+err);
  			 } else {
 				 storedRows = rows;
+				 storedRows = JSON.stringify(rows);
+				 console.log(JSON.parse(storedRows));
 				 for(i = 0; i < rows.length; i++){
-					 console.log(fields[0].name);
-					 console.log(rows[i].fields[0].name);
+					 console.log(fields[0]);
 					 console.log(rows[i]);
+					 
 					storedRows[i] = rows[i].fields[0].name;
 					 console.log(storedRows[i]);
 				 }
