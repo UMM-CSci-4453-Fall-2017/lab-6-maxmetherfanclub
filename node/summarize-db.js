@@ -14,6 +14,7 @@ var str2 = "show tables in ";
 var databaseEIndex = [];
 
 var z = 0;
+var bigpimple = 0;
 
 async.series([
 	function(callback) {
@@ -55,9 +56,9 @@ async.series([
 
 	//show tables in (database_name)
 	function(callback) {
-		console.log(storedDB.length);
 		z = 0;
 		var k = 0;
+		var counter = 0;
 		for (k = 0; k < storedDB.length; k++) {
 			connection.query(str2.concat(storedDB[k]),function(err,rows,fields){
 				if(err){
@@ -68,25 +69,35 @@ async.series([
 					// console.log(rows[0][fields[0].name]);
 					 for(i = 0; i < rows.length; i++){	
 						 storedRows[z] = rows[i][fields[0].name];	
-						z++;
+					//	 console.log(storedRows.length);
+						 z++;
 					 }
 					 //code for debugging
-					// console.log(storedRows.length);
+					 // console.log(storedRows.length);
 					 databaseEIndex[k] = z;
 					 //used for debugging
 					 //console.log('it actually went past here');
 					 //console.log(storedRows[0].Tables_in_XaiMarsh);
 					 //console.log('it actually went farther');
           			}
-			
+			console.log(storedRows.length);	
+			counter++;
+
+				if (counter == storedDB.length - 1){
+				console.log("baylieve");
+				callback();
+			}
 			});
+			console.log(storedRows.length);
 		}
-		callback();
+		//callback();
 	},
 	function(callback) {
 		var pimple = 0;
 		var pimple2 = 0;
 		var i = 0;
+		console.log("yolo");
+		console.log(storedRows.length);
 		for (i = 0; i < storedRows.length; i++) {
 			//"describe (database_name).(table_name)
 			connection.query(str1.concat(storedDB[pimple2], ".", storedRows[i]),function(err,rows,fields) {
@@ -100,13 +111,15 @@ async.series([
                        			 	console.log(rows[j].Field + " " + rows[j].Type);
 					 }
 					 pimple++;
-					 if(pimple == databaseEIndex[pimple2] && pimple2 < databaseEIndex.length){
+					 if(pimple == databaseEIndex[pimple2]-1 && pimple2 < databaseEIndex.length){
 						 pimple2++;
 					 }
                 		}
 
        			 });
-		
+			if(pimple == databaseEIndex[pimple2]-1 && pimple2 < databaseEIndex.length){
+                                                 pimple2++;
+                                         }	
 		}
 		 callback();
 	},
