@@ -7,12 +7,13 @@ var mysql=require("mysql");
 credentials.host="ids";
 var connection = mysql.createConnection(credentials);
 
-var storedDB = null;
-var storedRows = null;
+var storedDB = [];
+var storedRows = [];
 var str1 = "describe ";
 var str2 = "show tables in ";
+var databaseEIndex = [];
 
-var z = 1;
+var z = 0;
 
 async.series([
 	function(callback) {
@@ -37,9 +38,10 @@ async.series([
 			if(err){
 				console.log('SHOW DATABASES error '+err);
 			} else {
-				storedDB = rows;
-				for(i = 0; i < rows.length; i++){
+				storedDB = rows;	
+				for(i = 0; i < rows.length; i++){	
 					storedDB[i] = storedDB[i].Database;
+					databaseEIndex[i] = 0;
 				}
 				console.log(storedDB[1]);
 				//used for debugging
@@ -50,42 +52,56 @@ async.series([
 			callback();
 		});
 	},
+
+	//show tables in (database_name)
 	function(callback) {
-		connection.query(str2.concat(storedDB[z]),function(err,rows,fields){
-			if(err){
-    				console.log('Error looking up databases2 '+err);
- 			 } else {
-				 storedRows = rows;
-				 storedRows = JSON.stringify(rows);
-				 console.log(JSON.parse(storedRows));
-				 for(i = 0; i < rows.length; i++){
-					 console.log(fields[0]);
-					 console.log(rows[i]);
-					 
-					storedRows[i] = rows[i].fields[0].name;
-					 console.log(storedRows[i]);
-				 }
-				 //used for debugging
-				 //console.log('it actually went past here');
-				 //console.log(storedRows[0].Tables_in_XaiMarsh);
-				 //console.log('it actually went farther');
-          		}
-			 callback();
-		});
+		console.log(storedDB.length);
+		z = 0;
+		var k = 0;
+		for (k = 0; k < storedDB.length; k++) {
+			connection.query(str2.concat(storedDB[k]),function(err,rows,fields){
+				if(err){
+    					console.log('Error looking up databases2 '+err);
+ 				 } else {
+					 //code for debugging
+					// console.log(fields);
+					// console.log(rows[0][fields[0].name]);
+					 for(i = 0; i < rows.length; i++){	
+						 storedRows[z] = rows[i][fields[0].name];	
+						z++;
+					 }
+					 //code for debugging
+					// console.log(storedRows.length);
+					 databaseEIndex[k] = z;
+					 //used for debugging
+					 //console.log('it actually went past here');
+					 //console.log(storedRows[0].Tables_in_XaiMarsh);
+					 //console.log('it actually went farther');
+          			}
+			
+			});
+		}
+		callback();
 	},
 	function(callback) {
 		var pimple = 0;
+		var pimple2 = 0;
+		var i = 0;
 		for (i = 0; i < storedRows.length; i++) {
-			connection.query(str1.concat(storedDB[z], ".", storedRows[i]),function(err,rows,fields) {
+			//"describe (database_name).(table_name)
+			connection.query(str1.concat(storedDB[pimple2], ".", storedRows[i]),function(err,rows,fields) {
                 		if (err) {
                        			 console.log('Error describing rows'+err);
                			 } else {
 					 //used for debugging
 					 //console.log(storedRows[pimple]);
-					 console.log('......|XaiMarsh.'+storedRows[pimple] + '>'); 
-					 pimple++;
+					 console.log('......|'+storedDB[pimple2]+'.'+storedRows[pimple] + '>'); 
 					 for (j = 0; j < rows.length; j++ ) {
                        			 	console.log(rows[j].Field + " " + rows[j].Type);
+					 }
+					 pimple++;
+					 if(pimple == databaseEIndex[pimple2] && pimple2 < databaseEIndex.length){
+						 pimple2++;
 					 }
                 		}
 
