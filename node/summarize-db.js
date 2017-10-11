@@ -88,16 +88,18 @@ async.series([
 				callback();
 			}
 			});
-			console.log(storedRows.length);
+			console.log("i eat fish" + storedRows.length);
 		}
 		//callback();
 	},
 	function(callback) {
 		var pimple = 0;
 		var pimple2 = 0;
+		var pimple2_2 = 0;
 		var i = 0;
+		var counter = 0;
 		console.log("yolo");
-		console.log(storedRows.length);
+		console.log("legends never die" + storedRows.length);
 		for (i = 0; i < storedRows.length; i++) {
 			//"describe (database_name).(table_name)
 			connection.query(str1.concat(storedDB[pimple2], ".", storedRows[i]),function(err,rows,fields) {
@@ -111,17 +113,22 @@ async.series([
                        			 	console.log(rows[j].Field + " " + rows[j].Type);
 					 }
 					 pimple++;
-					 if(pimple == databaseEIndex[pimple2]-1 && pimple2 < databaseEIndex.length){
-						 pimple2++;
+					 if(pimple == databaseEIndex[pimple2_2]-1 && pimple2_2 < databaseEIndex.length){
+						 pimple2_2++;
 					 }
                 		}
-
+				counter++;
+				if(counter == storedDB.length -1){
+					callback();
+				}
        			 });
-			if(pimple == databaseEIndex[pimple2]-1 && pimple2 < databaseEIndex.length){
-                                                 pimple2++;
-                                         }	
+			console.log("Monica is here");
+			if(i == databaseEIndex[pimple2] - 1 && pimple2 < databaseEIndex.length){
+				console.log("Where you at monica" + pimple2);
+				pimple2++;
+			}
 		}
-		 callback();
+		// callback();
 	},
 	function(callback) {
 		connection.end();
