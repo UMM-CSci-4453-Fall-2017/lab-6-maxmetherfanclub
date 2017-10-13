@@ -58,7 +58,11 @@ async.series([
 	function(callback) {
 		z = 0;
 		var k = 0;
+		var DBEIndex = 0;
 		var counter = 0;
+		console.log("storedDB.length value is " + storedDB.length);
+		console.log("storedDB at 2 is " + storedDB[2]);
+		//show tables in (database name)
 		for (k = 0; k < storedDB.length; k++) {
 			connection.query(str2.concat(storedDB[k]),function(err,rows,fields){
 				if(err){
@@ -66,7 +70,8 @@ async.series([
  				 } else {
 					 //code for debugging
 					// console.log(fields);
-					// console.log(rows[0][fields[0].name]);
+					 console.log("k inside the query " + k);
+					 console.log("Please be correct: " + rows.length);
 					 for(i = 0; i < rows.length; i++){	
 						 storedRows[z] = rows[i][fields[0].name];	
 					//	 console.log(storedRows.length);
@@ -74,58 +79,66 @@ async.series([
 					 }
 					 //code for debugging
 					 // console.log(storedRows.length);
-					 databaseEIndex[k] = z;
+					 databaseEIndex[DBEIndex] = z;
+					 DBEIndex++;
 					 //used for debugging
 					 //console.log('it actually went past here');
 					 //console.log(storedRows[0].Tables_in_XaiMarsh);
 					 //console.log('it actually went farther');
           			}
-			console.log(storedRows.length);	
+			console.log(storedRows.length);
 			counter++;
 
-				if (counter == storedDB.length - 1){
-				console.log("baylieve");
+				if (counter == storedDB.length){
+				console.log("baylieve that this is right " + storedRows.length);
+				databaseEIndex[DBEIndex - 1] = databaseEIndex[DBEIndex - 1] + 1;
 				callback();
 			}
 			});
-			console.log("i eat fish" + storedRows.length);
+			console.log("k outside the query " + k);
+			console.log("i eat fish" + databaseEIndex[0]);
+			console.log("fish eat i" + databaseEIndex[2]);
 		}
 		//callback();
 	},
 	function(callback) {
-		var pimple = 0;
-		var pimple2 = 0;
-		var pimple2_2 = 0;
+		var rowIndex = 0;
+		var outerDBIndex = 0;
+		var innerDBIndex = 0;
 		var i = 0;
 		var counter = 0;
 		console.log("yolo");
 		console.log("legends never die" + storedRows.length);
 		for (i = 0; i < storedRows.length; i++) {
 			//"describe (database_name).(table_name)
-			connection.query(str1.concat(storedDB[pimple2], ".", storedRows[i]),function(err,rows,fields) {
+			connection.query(str1.concat(storedDB[outerDBIndex], ".", storedRows[i]),function(err,rows,fields) {
                 		if (err) {
                        			 console.log('Error describing rows'+err);
                			 } else {
 					 //used for debugging
 					 //console.log(storedRows[pimple]);
-					 console.log('......|'+storedDB[pimple2]+'.'+storedRows[pimple] + '>'); 
+					 console.log('......|'+storedDB[innerDBIndex]+'.'+storedRows[rowIndex] + '>'); 
 					 for (j = 0; j < rows.length; j++ ) {
                        			 	console.log(rows[j].Field + " " + rows[j].Type);
 					 }
-					 pimple++;
-					 if(pimple == databaseEIndex[pimple2_2]-1 && pimple2_2 < databaseEIndex.length){
-						 pimple2_2++;
+					 rowIndex++;
+					 console.log("rowIndex " + rowIndex);
+					 if(rowIndex == databaseEIndex[innerDBIndex]-1){
+						 innerDBIndex++;
 					 }
+					 console.log(innerDBIndex);
                 		}
 				counter++;
-				if(counter == storedDB.length -1){
+				if(counter == storedRows.length -1){
 					callback();
 				}
        			 });
 			console.log("Monica is here");
-			if(i == databaseEIndex[pimple2] - 1 && pimple2 < databaseEIndex.length){
-				console.log("Where you at monica" + pimple2);
-				pimple2++;
+			console.log("Monica says that outerDBIndex is " + outerDBIndex + "And its value is "+databaseEIndex[outerDBIndex] );
+			if(i == (databaseEIndex[outerDBIndex] - 1)){
+				console.log("Where you at monica" + outerDBIndex);
+				console.log(outerDBIndex);
+				outerDBIndex++;
 			}
 		}
 		// callback();
